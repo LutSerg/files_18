@@ -41,4 +41,52 @@ public class ZipParseTest {
             }
         }
     }
+
+    @Test
+    void zipParseTestPdf () throws Exception {
+        try (InputStream zipResource = cl.getResourceAsStream("zip/homework.zip");
+             ZipInputStream zis = new ZipInputStream(zipResource)
+        ) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entry.getName().contains("junit-user-guide-5.9.1.pdf")) {
+                    PDF pdfContent = new PDF(zis);
+                    assertThat(pdfContent.author).contains("Sam Brannen");
+                }
+            }
+        }
+    }
+
+    @Test
+    void zipParseTestCsv() throws Exception {
+        try (InputStream zipResource = cl.getResourceAsStream("zip/homework.zip");
+             ZipInputStream zis = new ZipInputStream(zipResource)
+        ) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entry.getName().contains("csvexample")) {
+                    CSVReader csvContent = new CSVReader(new InputStreamReader(zis));
+                    List<String[]> content = csvContent.readAll();
+                    assertThat(content.get(1)[1]).contains("Files");
+                }
+
+            }
+        }
+    }
+
+    @Test
+    void zipParseTestXls() throws Exception {
+        try (InputStream zipResource = cl.getResourceAsStream("zip/homework.zip");
+             ZipInputStream zis = new ZipInputStream(zipResource))
+        {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entry.getName().contains("sortovojprokat")) {
+                    XLS xlsContent = new XLS(zis);
+                    assertThat(xlsContent.excel.getSheetAt(0).getRow(4).getCell(0).getStringCellValue())
+                            .contains("АРМАТУРА");
+                }
+            }
+        }
+    }
 }
